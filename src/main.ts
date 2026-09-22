@@ -10,17 +10,19 @@ import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 
 import lambertVertSource from './shaders/lambert-vert.glsl?raw';
 import lambertFragSource from './shaders/lambert-frag.glsl?raw';
+import bgVertSource from './shaders/bg-vert.glsl?raw';
+import bgFragSource from './shaders/bg-frag.glsl?raw';
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
   tesselations: 8,
-  timeSpeed: 3,
+  timeSpeed: 2.5,
   tailLength: 4,
-  radialNoiseStrength: 0.2,
-  radialNoiseVariance: 0.1,
-  polarNoiseStrength: 0.15,
-  polarNoiseVariance: 0.08,
+  radialNoiseStrength: 0.05,
+  radialNoiseVariance: 0.45,
+  polarNoiseStrength: 0.1,
+  polarNoiseVariance: 0.3,
   'Load Scene': loadScene, // A function pointer, essentially
   'Reset Controls': resetControls,
 };
@@ -88,6 +90,10 @@ function main() {
     new Shader(gl.VERTEX_SHADER, lambertVertSource),
     new Shader(gl.FRAGMENT_SHADER, lambertFragSource),
   ]);
+  const bg = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, bgVertSource),
+    new Shader(gl.FRAGMENT_SHADER, bgFragSource),
+  ]);
 
   // This function will be called every frame
   function tick() {
@@ -104,9 +110,12 @@ function main() {
     lambert.setTime((performance.now() - startTime) / 1000 * controls.timeSpeed); // In seconds
     lambert.setTailLength(controls.tailLength);
     lambert.setNoiseParameters(controls.radialNoiseStrength, controls.radialNoiseVariance, controls.polarNoiseStrength, controls.polarNoiseVariance);
+    bg.setTailLength(controls.tailLength);
+    renderer.render(camera, bg, [
+      square
+    ]);
     renderer.render(camera, lambert, [
-      icosphere,
-      // square,
+      icosphere
     ]);
     stats.end();
 

@@ -24,7 +24,7 @@ out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
 const vec3 col1 = vec3(1.0, 0.0, 0.0);
-const vec3 col2 = vec3(1.0, 0.3, 0.2);
+const vec3 col2 = vec3(1.0, 0.2, 0.1);
 const vec3 col3 = vec3(0.2, 0.0, 0.0);
 
 vec3 interp3(vec3 a, vec3 b, vec3 c, float t)
