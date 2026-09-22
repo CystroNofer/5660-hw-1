@@ -18,26 +18,31 @@ uniform vec4 u_Color; // The color with which to render this instance of geometr
 in vec4 fs_Nor;
 in vec4 fs_LightVec;
 in vec4 fs_Col;
+in float fs_TailFactor;
 
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
+const vec3 col1 = vec3(1.0, 0.0, 0.0);
+const vec3 col2 = vec3(1.0, 0.3, 0.2);
+const vec3 col3 = vec3(0.2, 0.0, 0.0);
+
+vec3 interp3(vec3 a, vec3 b, vec3 c, float t)
+{
+    float u1 = smoothstep(0.0, 0.5, t);
+    float u2 = smoothstep(0.5, 1.0, t);
+
+    return mix(mix(a, b, u1), c, u2);
+}
+
+float bias(float b, float t)
+{
+    return pow(t, log(b) / log(0.5f));
+}
+
 void main()
 {
-    // Material base color (before shading)
-        vec4 diffuseColor = u_Color;
-
-        // Calculate the diffuse term for Lambert shading
-        float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
-        // Avoid negative lighting values
-        // diffuseTerm = clamp(diffuseTerm, 0, 1);
-
-        float ambientTerm = 0.2;
-
-        float lightIntensity = diffuseTerm + ambientTerm;   //Add a small float value to the color multiplier
-                                                            //to simulate ambient lighting. This ensures that faces that are not
-                                                            //lit by our point light are not completely black.
-
-        // Compute final shaded color
-        out_Col = vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a);
+    float steppedTailFactor = floor(bias(0.35, clamp(fs_TailFactor, 0.0, 1.0)) * 4.0 + 1.0) / 4.0;
+    out_Col = vec4(vec3(interp3(col1, col2, col3, steppedTailFactor)), 1.0);
+    // out_Col = vec4(vec3(steppedTailFactor), 1.0);
 }

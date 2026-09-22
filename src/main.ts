@@ -14,9 +14,18 @@ import lambertFragSource from './shaders/lambert-frag.glsl?raw';
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
-  tesselations: 5,
+  tesselations: 8,
+  timeSpeed: 3,
+  tailLength: 4,
+  radialNoiseStrength: 0.2,
+  radialNoiseVariance: 0.1,
+  polarNoiseStrength: 0.15,
+  polarNoiseVariance: 0.08,
   'Load Scene': loadScene, // A function pointer, essentially
+  'Reset Controls': resetControls,
 };
+
+const defaultControls = {...controls};
 
 let icosphere: Icosphere;
 let square: Square;
@@ -28,6 +37,12 @@ function loadScene() {
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();
 }
+
+function resetControls() {
+  Object.assign(controls, defaultControls);
+}
+
+const startTime = performance.now();
 
 function main() {
   // Initial display for framerate
@@ -41,7 +56,14 @@ function main() {
   // Add controls to the gui
   const gui = new DAT.GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
+  gui.add(controls, 'timeSpeed', 0, 10).step(0.5);
+  gui.add(controls, 'tailLength', 0, 10).step(0.1);
+  gui.add(controls, 'radialNoiseStrength', 0, 0.5).step(0.05);
+  gui.add(controls, 'radialNoiseVariance', 0, 0.5).step(0.05);
+  gui.add(controls, 'polarNoiseStrength', 0, 0.5).step(0.05);
+  gui.add(controls, 'polarNoiseVariance', 0, 0.5).step(0.01);
   gui.add(controls, 'Load Scene');
+  gui.add(controls, 'Reset Controls');
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -79,6 +101,9 @@ function main() {
       icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, prevTesselations);
       icosphere.create();
     }
+    lambert.setTime((performance.now() - startTime) / 1000 * controls.timeSpeed); // In seconds
+    lambert.setTailLength(controls.tailLength);
+    lambert.setNoiseParameters(controls.radialNoiseStrength, controls.radialNoiseVariance, controls.polarNoiseStrength, controls.polarNoiseVariance);
     renderer.render(camera, lambert, [
       icosphere,
       // square,

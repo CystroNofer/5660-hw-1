@@ -29,6 +29,12 @@ class ShaderProgram {
   unifModelInvTr: WebGLUniformLocation;
   unifViewProj: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
+  unifTime: WebGLUniformLocation;
+  unifTailLength: WebGLUniformLocation;
+  unifRadialNoiseStrength: WebGLUniformLocation;
+  unifRadialNoiseVariance: WebGLUniformLocation;
+  unifPolarNoiseStrength: WebGLUniformLocation;
+  unifPolarNoiseVariance: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -48,6 +54,12 @@ class ShaderProgram {
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
     this.unifColor      = gl.getUniformLocation(this.prog, "u_Color");
+    this.unifTime       = gl.getUniformLocation(this.prog, "u_Time");
+    this.unifTailLength = gl.getUniformLocation(this.prog, "u_TailLength");
+    this.unifRadialNoiseStrength = gl.getUniformLocation(this.prog, "u_RadialNoiseStrength");
+    this.unifRadialNoiseVariance = gl.getUniformLocation(this.prog, "u_RadialNoiseVariance");
+    this.unifPolarNoiseStrength = gl.getUniformLocation(this.prog, "u_PolarNoiseStrength");
+    this.unifPolarNoiseVariance = gl.getUniformLocation(this.prog, "u_PolarNoiseVariance");
   }
 
   use() {
@@ -82,6 +94,36 @@ class ShaderProgram {
     this.use();
     if (this.unifColor !== -1) {
       gl.uniform4fv(this.unifColor, color);
+    }
+  }
+
+  setTime(time: number) {
+    this.use();
+    if (this.unifTime !== -1) {
+      gl.uniform1f(this.unifTime, time);
+    }
+  }
+
+  setNoiseParameters(radialStrength: number, radialVariance: number, polarStrength: number, polarVariance: number) {
+    this.use();
+    if (this.unifRadialNoiseStrength !== -1) {
+      gl.uniform1f(this.unifRadialNoiseStrength, radialStrength);
+    }
+    if (this.unifRadialNoiseVariance !== -1) {
+      gl.uniform1f(this.unifRadialNoiseVariance, radialVariance);
+    }
+    if (this.unifPolarNoiseStrength !== -1) {
+      gl.uniform1f(this.unifPolarNoiseStrength, polarStrength);
+    }
+    if (this.unifPolarNoiseVariance !== -1) {
+      gl.uniform1f(this.unifPolarNoiseVariance, polarVariance);
+    }
+  }
+
+  setTailLength(length: number) {
+    this.use();
+    if (this.unifTailLength !== -1) {
+      gl.uniform1f(this.unifTailLength, length);
     }
   }
 
