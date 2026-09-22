@@ -24,7 +24,7 @@ void main()
 
     posCS = vs_Pos.xyz;
     posCS.z = 0.999;
-    vec4 tempV4 = u_ViewProj * vec4(0.0, u_TailLength * 10.0, 0.0, 1.0);
+    vec4 tempV4 = u_ViewProj * vec4(0.0, u_TailLength * 2.0, 0.0, 1.0);
     vanishPosCS = tempV4.xyz / tempV4.w;  // M matrix is identity anyway
 
     gl_Position = vec4(posCS, 1.0);
